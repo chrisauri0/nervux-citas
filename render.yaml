@@ -1,0 +1,43 @@
+# render.yaml (úbicalo en la raíz de tu repo)
+/*
+Define tu base de datos PostgreSQL
+*/
+databases:
+  - name: clinic-db
+    plan: starter       # o “standard” si necesitas más recursos
+    region: oregon      # elige la región más cercana
+
+services:
+  /*
+  1) Servicio Web (NestJS API)
+  */
+  - type: web_service
+    name: clinic-backend
+    env: node
+    plan: free        # cambia a “starter” o “standard” según consumo
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      # La URL de conexión se extrae directamente de la DB de arriba
+      - key: DATABASE_URL
+        fromDatabase:
+          name: clinic-db
+          property: connectionString
+
+  /*
+  2) Static Site (Vue frontend)
+  */
+  - type: static_site
+    name: clinic-frontend
+    env: static
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist     # donde Vue coloca los archivos tras `npm run build`
+    routes:
+      # Todo lo que venga a /api/* se reescribe al backend
+      - type: rewrite
+        source: /api/*
+        destination: https://clinic-backend.onrender.com/api/:splat
+
+# Fin de render.yaml
+
