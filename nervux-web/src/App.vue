@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import Header from '../src/components/public-components/Header.vue'
 </script>
 
 <template>
-  <div>esta sera la pagina principal</div>
+  <v-app>
+    <Header />
+    <router-view />
+  </v-app>
 </template>
